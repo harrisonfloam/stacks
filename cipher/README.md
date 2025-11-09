@@ -21,7 +21,7 @@ Clone the repository from GitHub and open it in VS Code.
 git clone https://github.com/harrisonfloam/stacks
 ```
 
-Then add the following entries to your [VS Code MCP config](command:workbench.mcp.openUserMcpJson), then ask GitHub Copilot to use Cipher.
+Then add the following entries to your [VS Code MCP config](command:workbench.mcp.openUserMcpJson) and ask GitHub Copilot to use Cipher.
 
 >Hotkey: <kbd>Cmd / Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> + <kbd>*MCP: Open User Configuration*</kbd>
 
