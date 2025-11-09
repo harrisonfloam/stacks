@@ -1,0 +1,46 @@
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: cipher-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    restart: unless-stopped
+    healthcheck:
+      test: "bash -c 'cat < /dev/null > /dev/tcp/localhost/8000'" # Modified from original
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  cipher:
+    image: ghcr.io/campfirein/cipher:latest
+    volumes:
+      - ./cipher.yml:/app/memAgent/cipher.yml:ro
+      - cipher_data:/root/.cipher
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VECTOR_STORE_TYPE=chroma
+      - VECTOR_STORE_URL=http://chromadb:8000
+      - VECTOR_STORE_COLLECTION=cipher_mcp
+      - NODE_ENV=production
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    # === stdio mode allows VS Code to control service lifecycle ===
+    healthcheck:
+      disable: true
+    stdin_open: true
+    # === ===
+    tty: false
+    command: ["node", "dist/src/app/index.cjs", "--mode", "mcp", "--agent", "/app/memAgent/cipher.yml"]
+
+volumes:
+  chroma_data:
+    driver: local
+  cipher_data:
+    driver: local
